@@ -1,0 +1,13 @@
+api:
+  build: .
+  command: babel-node /iojs-api/index.js --restart=always
+  ports:
+    - "3000:3000"
+  links:
+    - mongodb
+brainstorming-blog:
+  image: apetalas/angular2:latest
+  ports:
+    - "3300:5555"
+  volumes:
+   - ./app:/app/app
