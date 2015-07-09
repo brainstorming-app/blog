@@ -15,11 +15,13 @@ gulp serve.dev
 
 ## USE with docker image and get transparent upgrades
 
+# install docker (https://www.docker.com/) and docker-compose (https://docs.docker.com/compose/install/)
+
 ```bash
 
-docker pull apetalas/angular2:latest
+docker-compose pull
 
-docker run -d -v /absolute_path_for_app_source_code/app:/app/app -p THE_PORT_YOU_WANT:5555 apetalas/angular2
+docker-compose up
 
 navigate http://localhost:THE_PORT_YOU_WANT
 
