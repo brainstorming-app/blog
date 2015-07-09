@@ -1,21 +1,21 @@
-## Install in host
-# install
+## Install...
+
 ```bash
 npm install
 ```
 
-# install gulp (task manager)
+install gulp (task manager)
 ```bash
 npm install -g gulp
 ```
-# run task serve.dev (see gulpfile.js)
+run task serve.dev (see gulpfile.js)
 ```bash
 gulp serve.dev
 ```
 
-## USE with docker image and get transparent upgrades
+## ...Or with Docker
 
-# install docker (https://www.docker.com/) and docker-compose (https://docs.docker.com/compose/install/)
+install docker (https://www.docker.com/) and docker-compose (https://docs.docker.com/compose/install/)
 
 ```bash
 
