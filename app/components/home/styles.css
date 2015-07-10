@@ -7,7 +7,7 @@ body {
 }
 
 body::before {
-    background-image: url('/images/head.jpg');
+    background-image: url('images/head.jpg');
     background-size: cover;
     background-attachment: fixed;
     content: '';
