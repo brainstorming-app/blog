@@ -135,7 +135,7 @@ gulp.task('build.lib.dev', ['build.ng2.dev'], function () {
 });
 
 gulp.task('build.js.dev', function () {
-  var result = gulp.src('./app/**/*ts')
+  var result = gulp.src(['./app/**/*ts', './app/**/*js'])
     .pipe(plumber())
     .pipe(sourcemaps.init())
     .pipe(tsc(tsProject));
