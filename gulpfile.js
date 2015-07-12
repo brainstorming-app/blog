@@ -13,6 +13,11 @@ var template = require('gulp-template');
 var tsc = require('gulp-typescript');
 var uglify = require('gulp-uglify');
 var watch = require('gulp-watch');
+var sass = require('gulp-sass');
+var cssInlineImages = require('gulp-css-inline-images');
+//var MaterialCustomizer = require('./docs/_assets/customizer.js');
+var file = require('gulp-file');
+
 
 var Builder = require('systemjs-builder');
 var del = require('del');
@@ -147,7 +152,7 @@ gulp.task('build.js.dev', function () {
 });
 
 gulp.task('build.assets.dev', ['build.js.dev'], function () {
-  return gulp.src(['./app/**/*.html', './app/**/*.css', './app/**/*.jpg', './app/**/*.png'])
+  return gulp.src(['./app/**/*.html', './app/**/*.css', './app/**/*.jpg','./app/**/*.js', './app/**/*.png'])
     .pipe(gulp.dest(PATH.dest.dev.all));
 });
 
@@ -159,12 +164,169 @@ gulp.task('build.index.dev', function() {
     .pipe(gulp.dest(PATH.dest.dev.all));
 });
 
+// ***** Production build tasks ****** //
+
+// Optimize Images
+// TODO: Update image paths in final CSS to match root/images
+gulp.task('imagesMaterial', function () {
+  return gulp.src('app/src/**/*.{svg,png,jpg}')
+    .pipe(gulp.dest('dist/dev'))
+});
+
+gulp.task('templates', function() {
+  return gulp.src([
+    'app/**/*.scss'
+  ])
+    .pipe(sass({
+      precision: 10,
+      onError: console.error.bind(console, 'Sass error:')
+    }))
+    .pipe(cssInlineImages({
+      webRoot: 'app/src'
+    }))
+    .pipe(gulp.dest('dist/dev'));
+});
+
+// Compile and Automatically Prefix Stylesheet Templates (production)
+gulp.task('styletemplates', function () {
+  // For best performance, don't add Sass partials to `gulp.src`
+  return gulp.src([
+    'app/src/template.scss'
+  ])
+    // Generate Source Maps
+    .pipe (sourcemaps.init())
+    .pipe(sass({
+      precision: 10,
+      onError: console.error.bind(console, 'Sass error:')
+    }))
+    .pipe(cssInlineImages({
+      webRoot: 'app/src'
+    }))
+    // Concatenate Styles
+    .pipe(concat('material.css.template'))
+    .pipe(gulp.dest('./dist'))
+    // Minify Styles
+    .pipe(concat('material.min.css.template'))
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('./dist'))
+});
+
+
+
+// Compile and Automatically Prefix Stylesheets (production)
+gulp.task('styles', ['styletemplates'], function () {
+  // For best performance, don't add Sass partials to `gulp.src`
+  return gulp.src([
+    'app/src/styleguide.scss'
+  ])
+    // Generate Source Maps
+    .pipe (sourcemaps.init())
+    .pipe(sass({
+      precision: 10,
+      onError: console.error.bind(console, 'Sass error:')
+    }))
+    .pipe(cssInlineImages({
+      webRoot: 'app/src'
+    }))
+    .pipe(gulp.dest('.tmp'))
+    // Concatenate Styles
+    .pipe(concat('material.css'))
+    .pipe(gulp.dest('./dist'))
+    // Minify Styles
+    .pipe(concat('material.min.css'))
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('./dist'))
+});
+
+// Only generate CSS styles for the MDL grid
+gulp.task('styles-grid', function () {
+  return gulp.src(['app/src/material-design-lite-grid.scss'])
+    .pipe(sass({
+      precision: 10,
+      onError: console.error.bind(console, 'Sass error:')
+    }))
+    .pipe(gulp.dest('.tmp'))
+    // Concatenate Styles
+    .pipe(concat('material-grid.css'))
+    .pipe(gulp.dest('./dist'))
+    // Minify Styles
+    .pipe(concat('material-grid.min.css'))
+    .pipe(gulp.dest('./dist'))
+});
+
+// Concatenate And Minify JavaScript
+gulp.task('scripts', function () {
+  var sources = [
+    // Component handler
+    'app/src/mdlComponentHandler.js',
+    // Polyfills/dependencies
+    'app/src/third_party/**/*.js',
+    // Base components
+    'app/src/button/button.js',
+    'app/src/checkbox/checkbox.js',
+    'app/src/icon-toggle/icon-toggle.js',
+    'app/src/menu/menu.js',
+    'app/src/progress/progress.js',
+    'app/src/radio/radio.js',
+    'app/src/slider/slider.js',
+    'app/src/spinner/spinner.js',
+    'app/src/switch/switch.js',
+    'app/src/tabs/tabs.js',
+    'app/src/textfield/textfield.js',
+    'app/src/tooltip/tooltip.js',
+    // Complex components (which reuse base components)
+    'app/src/layout/layout.js',
+    'app/src/data-table/data-table.js',
+    // And finally, the ripples
+    'app/src/ripple/ripple.js'
+  ];
+  return gulp.src(sources)
+    .pipe(sourcemaps.init())
+    // Concatenate Scripts
+    .pipe(concat('material.js'))
+    .pipe(gulp.dest('./dist'))
+    // Minify Scripts
+    .pipe(uglify({
+      sourceRoot: '.',
+      sourceMapIncludeSources: true
+    }))
+    .pipe(concat('material.min.js'))
+    // Write Source Maps
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('./dist'))
+});
+
+/*
+gulp.task('styles:gen', ['styles'], function() {
+  // TODO: This task needs refactoring once we turn MaterialCustomizer
+  // into a proper Node module.
+  var mc = new MaterialCustomizer();
+  mc.template = fs.readFileSync('./dist/material.min.css.template').toString();
+
+  var stream = gulp.src('');
+  mc.paletteIndices.forEach(function(primary) {
+    mc.paletteIndices.forEach(function(accent) {
+      if (mc.forbiddenAccents.indexOf(accent) !== -1) {
+        return;
+      }
+      var primaryName = primary.toLowerCase().replace(' ', '_');
+      var accentName = accent.toLowerCase().replace(' ', '_');
+      stream = stream.pipe(file(
+        'material.' + primaryName + '-' + accentName + '.min.css',
+        mc.processTemplate(primary, accent)
+      ));
+    });
+  });
+  stream.pipe(gulp.dest('dist'));
+});*/
+
+
 gulp.task('build.app.dev', function (done) {
   runSequence('clean.app.dev', 'build.assets.dev', 'build.index.dev', done);
 });
 
 gulp.task('build.dev', function (done) {
-  runSequence('clean.dev', 'build.lib.dev', 'build.app.dev', done);
+  runSequence('clean.dev', 'build.lib.dev', 'build.app.dev','imagesMaterial','templates', done);
 });
 
 // --------------
