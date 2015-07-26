@@ -204,11 +204,11 @@ gulp.task('styletemplates', function () {
     }))
     // Concatenate Styles
     .pipe(concat('material.css.template'))
-    .pipe(gulp.dest('./dist'))
+    .pipe(gulp.dest('./dist/dev'))
     // Minify Styles
     .pipe(concat('material.min.css.template'))
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('./dist'))
+    .pipe(gulp.dest('./dist/dev'))
 });
 
 
@@ -231,11 +231,11 @@ gulp.task('styles', ['styletemplates'], function () {
     .pipe(gulp.dest('.tmp'))
     // Concatenate Styles
     .pipe(concat('material.css'))
-    .pipe(gulp.dest('./dist'))
+    .pipe(gulp.dest('./dist/dev'))
     // Minify Styles
     .pipe(concat('material.min.css'))
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('./dist'))
+    .pipe(gulp.dest('./dist/dev'))
 });
 
 // Only generate CSS styles for the MDL grid
@@ -248,10 +248,10 @@ gulp.task('styles-grid', function () {
     .pipe(gulp.dest('.tmp'))
     // Concatenate Styles
     .pipe(concat('material-grid.css'))
-    .pipe(gulp.dest('./dist'))
+    .pipe(gulp.dest('./dist/dev'))
     // Minify Styles
     .pipe(concat('material-grid.min.css'))
-    .pipe(gulp.dest('./dist'))
+    .pipe(gulp.dest('./dist/dev'))
 });
 
 // Concatenate And Minify JavaScript
@@ -284,7 +284,7 @@ gulp.task('scripts', function () {
     .pipe(sourcemaps.init())
     // Concatenate Scripts
     .pipe(concat('material.js'))
-    .pipe(gulp.dest('./dist'))
+    .pipe(gulp.dest('./dist/dev'))
     // Minify Scripts
     .pipe(uglify({
       sourceRoot: '.',
@@ -293,7 +293,7 @@ gulp.task('scripts', function () {
     .pipe(concat('material.min.js'))
     // Write Source Maps
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('./dist'))
+    .pipe(gulp.dest('./dist/dev'))
 });
 
 /*
@@ -326,7 +326,7 @@ gulp.task('build.app.dev', function (done) {
 });
 
 gulp.task('build.dev', function (done) {
-  runSequence('clean.dev', 'build.lib.dev', 'build.app.dev','imagesMaterial','templates', done);
+  runSequence('clean.dev', 'build.lib.dev', 'build.app.dev','imagesMaterial','templates','scripts', done);
 });
 
 // --------------
