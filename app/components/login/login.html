@@ -2,12 +2,12 @@
 <!-- On form submit, we call the Login event with the username and the password from the inputs -->
 <form (submit)="login($event, username.value, password.value)">
   <div class="mdl-textfield mdl-js-textfield textfield-demo">
-  <input type="text" #username class="form-control" id="username" class="mdl-textfield__input">
+  <input type="text" #username id="username" class="mdl-textfield__input">
   <label class="mdl-textfield__label" for="username">Username</label>  <!-- Using #username, we can identify this input to get the value on the form's submit event -->
 </div>
 <div class="mdl-textfield mdl-js-textfield textfield-demo">
   <!-- Using #password we can identify this input to get its value -->
-  <input type="password" #password class="form-control" id="password" class="mdl-textfield__input">
+  <input type="password" #password id="password" class="mdl-textfield__input">
   <label class="mdl-textfield__label" for="password">Password</label>  <!-- Using #username, we can identify this input to get the value on the form's submit event -->
   </div>
 
@@ -15,3 +15,6 @@
     Submit
 </button>
 </form>
+<script>
+componentHandler.upgradeAllRegistered();
+</script>
